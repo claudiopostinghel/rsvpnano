@@ -285,6 +285,7 @@ class App {
   void markSettingsFileDirty();
   void maybeSaveSettingsToSd(uint32_t nowMs);
   void saveSettingsToSd();
+  SettingsData currentSettingsSnapshot();
   SettingsData buildSettingsData();
   void applySettingsFromSd();
   void applyUiOrientation(BoardConfig::UiOrientation orientation);

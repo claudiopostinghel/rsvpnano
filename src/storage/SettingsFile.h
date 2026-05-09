@@ -4,7 +4,7 @@
 #include <vector>
 
 // All persistent settings, including per-book reading positions.
-// Serialized to /sdcard/settings.json on every change.
+// Serialized to settings.json on the SD card on every change.
 struct SettingsData {
   // Display & UI
   uint8_t brightness = 4;
@@ -31,7 +31,7 @@ struct SettingsData {
   uint16_t wpm = 300;
   // Network / OTA
   String wifiSsid;
-  String wifiPass;
+  String wifiPass;  // Note: stored in plaintext on SD card
   bool otaAuto = false;
   String otaOwner;
 
@@ -49,15 +49,15 @@ struct SettingsData {
 
 class SettingsFile {
  public:
-  // Reads /sdcard/settings.json and merges values into out (missing keys keep
-  // whatever value out already has). Returns true on success.
+  // Reads /settings.json from the SD card and merges values into out (missing
+  // keys keep whatever value out already has). Returns true on success.
   bool load(SettingsData &out);
 
-  // Writes data to /sdcard/settings.json atomically via a temp file.
+  // Writes data to /settings.json on the SD card atomically via a temp file.
   // Returns true on success.
   bool save(const SettingsData &data);
 
  private:
-  static constexpr const char *kPath = "/sdcard/settings.json";
-  static constexpr const char *kTempPath = "/sdcard/settings.tmp";
+  static constexpr const char *kPath = "/settings.json";
+  static constexpr const char *kTempPath = "/settings.tmp";
 };

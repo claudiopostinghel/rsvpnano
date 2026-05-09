@@ -3105,7 +3105,6 @@ void App::saveReadingPosition(bool force) {
   preferences_.putUInt(kPrefLegacyWordIndex, static_cast<uint32_t>(wordIndex));
   preferences_.putUShort(kPrefWpm, reader_.wpm());
   markBookRecent(currentBookPath_);
-  markSettingsFileDirty();
   lastSavedWordIndex_ = wordIndex;
   Serial.printf("[app] saved position word=%u book=%s\n", static_cast<unsigned int>(wordIndex),
                 currentBookPath_.c_str());
@@ -3950,7 +3949,7 @@ void App::saveSettingsToSd() {
   }
 }
 
-SettingsData App::buildSettingsData() {
+SettingsData App::currentSettingsSnapshot() {
   SettingsData data;
   data.brightness = brightnessLevelIndex_;
   data.darkMode = darkMode_;
@@ -3971,12 +3970,17 @@ SettingsData App::buildSettingsData() {
   data.pacingComplexMs = pacingComplexWordDelayMs_;
   data.pacingPunctuationMs = pacingPunctuationDelayMs_;
   data.wpm = reader_.wpm();
+  data.otaAuto = otaAutoCheckEnabled();
+  data.recentSequence = preferences_.getUInt(kPrefRecentSeq, 0);
+  return data;
+}
+
+SettingsData App::buildSettingsData() {
+  SettingsData data = currentSettingsSnapshot();
   data.wifiSsid = preferences_.getString(kPrefWifiSsid, "");
   data.wifiPass = preferences_.getString(kPrefWifiPass, "");
-  data.otaAuto = otaAutoCheckEnabled();
   data.otaOwner = preferences_.getString(kPrefOtaOwner, "");
   data.currentBook = currentBookPath_;
-  data.recentSequence = preferences_.getUInt(kPrefRecentSeq, 0);
 
   for (size_t i = 0; i < storage_.bookCount(); ++i) {
     const String path = storage_.bookPath(i);
@@ -3996,29 +4000,8 @@ SettingsData App::buildSettingsData() {
 }
 
 void App::applySettingsFromSd() {
-  SettingsData data;
-  // Pre-populate with current NVS-loaded values so missing JSON keys keep them.
-  data.brightness = brightnessLevelIndex_;
-  data.darkMode = darkMode_;
-  data.nightMode = nightMode_;
-  data.uiLanguage = static_cast<uint8_t>(uiLanguage_);
-  data.readerMode = static_cast<uint8_t>(readerMode_);
-  data.handedness = static_cast<uint8_t>(handednessMode_);
-  data.phantomWords = phantomWordsEnabled_;
-  data.footerMetric = static_cast<uint8_t>(footerMetricMode_);
-  data.fontSize = readerFontSizeIndex_;
-  data.typeface = static_cast<uint8_t>(typographyConfig_.typeface);
-  data.focusHighlight = typographyConfig_.focusHighlight;
-  data.tracking = typographyConfig_.trackingPx;
-  data.anchorPercent = typographyConfig_.anchorPercent;
-  data.guideWidth = typographyConfig_.guideHalfWidth;
-  data.guideGap = typographyConfig_.guideGap;
-  data.pacingLongMs = pacingLongWordDelayMs_;
-  data.pacingComplexMs = pacingComplexWordDelayMs_;
-  data.pacingPunctuationMs = pacingPunctuationDelayMs_;
-  data.wpm = reader_.wpm();
-  data.otaAuto = otaAutoCheckEnabled();
-  data.recentSequence = preferences_.getUInt(kPrefRecentSeq, 0);
+  // Pre-populate with current values so missing JSON keys keep their NVS values.
+  SettingsData data = currentSettingsSnapshot();
 
   if (!settingsFile_.load(data)) {
     return;
@@ -4107,9 +4090,12 @@ void App::applySettingsFromSd() {
     preferences_.putString(kPrefBookPath, data.currentBook);
   }
   for (const auto &b : data.books) {
-    preferences_.putUInt(bookPositionKey(b.path).c_str(), b.position);
-    preferences_.putUInt(bookWordCountKey(b.path).c_str(), b.wordCount);
-    preferences_.putUInt(bookRecentKey(b.path).c_str(), b.recentSeq);
+    const uint32_t nvsRecentSeq = preferences_.getUInt(bookRecentKey(b.path).c_str(), 0);
+    if (b.recentSeq >= nvsRecentSeq) {
+      preferences_.putUInt(bookPositionKey(b.path).c_str(), b.position);
+      preferences_.putUInt(bookWordCountKey(b.path).c_str(), b.wordCount);
+      preferences_.putUInt(bookRecentKey(b.path).c_str(), b.recentSeq);
+    }
   }
 
   Serial.printf("[settings] applied SD settings (%u book positions restored)\n",

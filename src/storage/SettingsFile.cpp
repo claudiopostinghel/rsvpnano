@@ -28,6 +28,11 @@ bool SettingsFile::load(SettingsData &out) {
     return false;
   }
 
+  const int version = doc["version"] | 1;
+  if (version > 1) {
+    Serial.printf("[settings] unknown settings version %d, loading anyway\n", version);
+  }
+
   JsonObjectConst s = doc["settings"];
   if (!s.isNull()) {
     out.brightness = s["brightness"] | out.brightness;
@@ -128,7 +133,6 @@ bool SettingsFile::save(const SettingsData &data) {
   serializeJsonPretty(doc, f);
   f.close();
 
-  SD_MMC.remove(kPath);
   if (!SD_MMC.rename(kTempPath, kPath)) {
     Serial.println("[settings] rename failed");
     SD_MMC.remove(kTempPath);
