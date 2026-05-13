@@ -10,7 +10,7 @@ class OtaUpdater {
   struct Config {
     String wifiSsid;
     String wifiPassword;
-    String githubOwner = "ionutdecebal";
+    String githubOwner = "claudiopostinghel";
     String githubRepo = "rsvpnano";
     String assetName = "rsvp-nano-ota.bin";
     bool autoCheck = false;
@@ -19,6 +19,7 @@ class OtaUpdater {
   enum class ResultCode : uint8_t {
     Success,
     NoUpdate,
+    UpdateAvailable,
     NotConfigured,
     ConnectFailed,
     MetadataFailed,
@@ -38,6 +39,8 @@ class OtaUpdater {
   bool loadConfig(Config &config) const;
   bool isConfigured(const Config &config) const;
   String currentVersion() const;
+  Result checkOnly(const Config &config, StatusCallback callback = nullptr,
+                   void *context = nullptr) const;
   Result checkAndInstall(const Config &config, StatusCallback callback = nullptr,
                          void *context = nullptr) const;
 
