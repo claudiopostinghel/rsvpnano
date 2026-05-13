@@ -1096,8 +1096,8 @@
             return;
           }
 
-          const text = dialog.shadowRoot.textContent || "";
-          if (text.indexOf("Installation complete") === -1) {
+          var msg = dialog.shadowRoot.querySelector("ewt-page-message");
+          if (!msg || !msg.label || String(msg.label).indexOf("complete") === -1) {
             return;
           }
 
