@@ -1,0 +1,180 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - text: "Last flashed:"
+      - strong [ref=e4]: v1.0.2
+    - generic [ref=e5]:
+      - text: "Available now:"
+      - strong [ref=e6]: v1.0.3
+  - main [ref=e7]:
+    - generic [ref=e9]:
+      - paragraph [ref=e10]: Browser firmware installer
+      - heading "RSVP Nano" [level=1] [ref=e11]
+      - paragraph [ref=e12]: Flash the reader from Chrome or Edge without installing VS Code, PlatformIO, or command-line tools. Connect the device by USB, click install, and let the browser write it directly to the ESP32-S3.
+    - generic [ref=e13]:
+      - button "1 Browser Flasher Install Firmware Update available" [ref=e14] [cursor=pointer]:
+        - generic [ref=e15]:
+          - generic [ref=e16]: "1"
+          - generic [ref=e17]:
+            - generic [ref=e18]: Browser Flasher
+            - generic [ref=e19]: Install Firmware
+        - generic [ref=e20]: Update available
+        - img [ref=e21]
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - paragraph [ref=e25]: Flash the current browser installer manifest, then use the next steps to prepare books and sync them onto the SD card.
+          - paragraph [ref=e26]: "Put the device in boot mode before starting the installer:"
+          - list [ref=e27]:
+            - listitem [ref=e28]: Turn the device off.
+            - listitem [ref=e29]:
+              - text: Hold
+              - code [ref=e30]: BOOT
+              - text: while connecting a USB data cable.
+            - listitem [ref=e31]: If the installer cannot connect, tap reset or power-cycle, then try again.
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - strong [ref=e35]: RSVP Nano firmware
+              - generic [ref=e36]: Latest manifest
+            - list [ref=e38]:
+              - listitem [ref=e39]: ✓ On-device EPUB conversion
+              - listitem [ref=e40]: ✓ USB SD-card transfer mode
+              - listitem [ref=e41]: ✓ Extended-Latin character support
+            - generic [ref=e43]:
+              - img [ref=e44]
+              - text: Up to date
+            - button "Update Firmware v1.0.3 18 minutes ago" [ref=e47] [cursor=pointer]:
+              - generic [ref=e48]: Update Firmware
+              - generic [ref=e49]:
+                - generic [ref=e50]: v1.0.3
+                - generic [ref=e51]: 18 minutes ago
+          - generic [ref=e52]: Flashing replaces the firmware on the connected ESP32-S3. Keep the device plugged in until the installer says it is finished.
+    - generic [ref=e53]:
+      - button "2 Storage Workflow Prepare SD Card Sync into /books" [expanded] [ref=e54] [cursor=pointer]:
+        - generic [ref=e55]:
+          - generic [ref=e56]: "2"
+          - generic [ref=e57]:
+            - generic [ref=e58]: Storage Workflow
+            - generic [ref=e59]: Prepare SD Card
+        - generic [ref=e60]:
+          - text: Sync into
+          - code [ref=e61]: /books
+        - img [ref=e62]
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - paragraph [ref=e66]:
+            - text: The recommended path is to convert supported source books in the browser, then place the generated
+            - code [ref=e67]: .rsvp
+            - text: files in the SD card’s
+            - code [ref=e68]: /books
+            - text: folder.
+          - list [ref=e69]:
+            - listitem [ref=e70]: Insert the SD card into the reader.
+            - listitem [ref=e71]:
+              - text: Open
+              - code [ref=e72]: USB transfer
+              - text: on the device, or remove the card and use a card reader.
+            - listitem [ref=e73]:
+              - text: Pick the SD card’s
+              - code [ref=e74]: /books
+              - text: folder in the workspace below, then import, clean sidecars, and sync.
+          - paragraph [ref=e75]:
+            - text: The firmware can read
+            - code [ref=e76]: .rsvp
+            - text: ","
+            - code [ref=e77]: .txt
+            - text: ", and"
+            - code [ref=e78]: .epub
+            - text: files from
+            - code [ref=e79]: /books
+            - text: ", but browser-converted"
+            - code [ref=e80]: .rsvp
+            - text: files are the best-supported format.
+        - generic [ref=e82]:
+          - generic [ref=e83]:
+            - generic [ref=e84]: USB Transfer
+            - strong [ref=e85]: Expose the SD card from the device menu
+            - paragraph [ref=e86]:
+              - text: On the default USB-enabled firmware, open
+              - code [ref=e87]: USB transfer
+              - text: from the main menu to expose the SD card over USB. When you finish copying files, eject the device from your computer, then hold
+              - code [ref=e88]: BOOT
+              - text: to leave transfer mode.
+          - generic [ref=e89]:
+            - generic [ref=e90]: Folder Layout
+            - strong [ref=e91]:
+              - text: Keep book files under
+              - code [ref=e92]: /books
+            - paragraph [ref=e93]: The workspace below can sync directly into that folder and the device library will scan it automatically after the SD card remounts.
+          - generic [ref=e94]:
+            - generic [ref=e95]: Cleanup
+            - strong [ref=e96]: Remove metadata and interrupted sidecars
+            - paragraph [ref=e97]:
+              - text: The
+              - code [ref=e98]: Clean Sidecars
+              - text: action helps clear platform metadata and temporary files such as
+              - code [ref=e99]: .rsvp.tmp
+              - text: ","
+              - code [ref=e100]: .rsvp.converting
+              - text: ", and"
+              - code [ref=e101]: .rsvp.failed
+              - text: .
+    - generic [ref=e102]:
+      - button "3 Browser Conversion Library Workspace" [expanded] [ref=e103] [cursor=pointer]:
+        - generic [ref=e104]:
+          - generic [ref=e105]: "3"
+          - generic [ref=e106]:
+            - generic [ref=e107]: Browser Conversion
+            - generic [ref=e108]: Library Workspace
+        - img [ref=e109]
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - paragraph [ref=e114]:
+            - text: Bring books into the browser, convert them into
+            - code [ref=e115]: .rsvp
+            - text: ", and sync the results back into the SD card’s"
+            - code [ref=e116]: /books
+            - text: folder without leaving this page.
+          - generic [ref=e117]:
+            - button "Add Books" [ref=e118] [cursor=pointer]
+            - button "Choose /books Folder" [ref=e119] [cursor=pointer]
+            - button "Import From Folder" [disabled] [ref=e120]
+            - button "Clean Sidecars" [disabled] [ref=e121]
+            - button "Download .zip" [disabled] [ref=e122]
+            - button "Sync To Folder" [disabled] [ref=e123]
+            - button "Clear Library" [disabled] [ref=e124]
+          - generic [ref=e125]:
+            - strong [ref=e126]: Drop supported books here
+            - paragraph [ref=e127]: EPUB, TXT, Markdown, and HTML sources are converted locally in your browser. Nothing is uploaded to a server.
+          - generic [ref=e128]:
+            - generic [ref=e129]:
+              - generic [ref=e130]: Compatibility
+              - strong [ref=e131]: Automatic extended-Latin output
+              - paragraph [ref=e132]: Preserves common accented, Baltic, Sami, and other extended-Latin letters while staying friendly to the current firmware.
+            - generic [ref=e133]:
+              - generic [ref=e134]: Selected Folder
+              - strong [ref=e135]: No /books folder selected
+            - generic [ref=e136]:
+              - generic [ref=e137]: Library Summary
+              - strong [ref=e138]: 0 converted books ready
+            - generic [ref=e139]:
+              - generic [ref=e140]: Folder Inventory
+              - strong [ref=e141]: Pick the SD card’s /books folder to scan it
+          - paragraph [ref=e142]:
+            - text: Everything is converted locally in your browser. Pick the SD card’s
+            - code [ref=e143]: /books
+            - text: folder if you want one-click import, cleanup, and sync.
+          - generic [ref=e144]:
+            - strong [ref=e145]: Ready to build a library
+            - text: Add files from your computer or pick the SD card’s
+            - code [ref=e146]: /books
+            - text: folder to bring supported source books into the workspace.
+        - generic [ref=e147]:
+          - heading "Converted Books" [level=3] [ref=e148]
+          - paragraph [ref=e149]:
+            - text: Each imported source is turned into a reader-ready
+            - code [ref=e150]: .rsvp
+            - text: file so you can download it or sync everything back to the selected folder in one step.
+          - list
+          - generic [ref=e151]: Add a few books and the converted library will appear here.
+    - generic [ref=e152]: RSVP Nano is open source. Build it, modify it, improve it, and share what you make.
