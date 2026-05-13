@@ -2708,15 +2708,6 @@ String App::otaOwnerLabel() {
   return cfg.githubOwner;
 }
 
-String App::otaOwnerLabel() {
-  if (preferences_.isKey(kPrefOtaOwner)) {
-    return preferences_.getString(kPrefOtaOwner, "");
-  }
-  OtaUpdater::Config cfg;
-  otaUpdater_.loadConfig(cfg);
-  return cfg.githubOwner;
-}
-
 OtaUpdater::Config App::preferredOtaConfig() {
   OtaUpdater::Config otaConfig;
   otaUpdater_.loadConfig(otaConfig);
