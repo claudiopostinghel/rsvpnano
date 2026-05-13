@@ -168,8 +168,14 @@
       }
 
       .section-summary.update-available {
-        color: var(--accent-deep);
+        color: #14532d;
+        background: #bbf7d0;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 0.82em;
+        font-weight: 600;
       }
+
 
       .chevron {
         width: 20px;
@@ -277,12 +283,64 @@
         font-weight: 700;
       }
 
+      .uptodate-badge[hidden] {
+        display: none;
+      }
+
+      .uptodate-badge {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 0;
+        border-radius: 999px;
+        padding: 13px 18px;
+        color: #fffaf1;
+        background: #4c7a4a;
+        font: 800 0.95rem/1 ui-sans-serif, system-ui, sans-serif;
+        box-shadow: 0 12px 26px rgba(76, 122, 74, 0.24);
+        box-sizing: border-box;
+      }
+
+      .uptodate-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .uptodate-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        font-weight: 600;
+        font-size: 0.72rem;
+        line-height: 1.3;
+        opacity: 0.85;
+      }
+
+      .uptodate-reinstall {
+        display: block;
+        margin-top: 6px;
+        text-align: center;
+        color: var(--muted);
+        font: 600 0.78rem/1.3 ui-sans-serif, system-ui, sans-serif;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+      }
+
       esp-web-install-button {
         margin-top: 4px;
       }
 
       button[slot="activate"] {
         width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         border: 0;
         border-radius: 999px;
         padding: 13px 18px;
@@ -291,6 +349,16 @@
         font: 800 0.95rem/1 ui-sans-serif, system-ui, sans-serif;
         cursor: pointer;
         box-shadow: 0 12px 26px rgba(211, 84, 47, 0.24);
+      }
+
+      button[slot="activate"] .btn-version {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        font-weight: 600;
+        font-size: 0.72rem;
+        line-height: 1.3;
+        opacity: 0.7;
       }
 
       button[slot="activate"]:hover {
@@ -720,7 +788,11 @@
     </style>
   </head>
   <body>
-    <main>
+    <div id="debug-versions" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#1a1a2e;color:#fffaf1;font:700 0.82rem/1.4 ui-monospace,monospace;padding:8px 16px;display:flex;gap:24px;border-bottom:2px solid var(--accent)">
+      <span>Last flashed: <strong id="dbg-flashed">—</strong></span>
+      <span>Available now: <strong id="dbg-available">—</strong></span>
+    </div>
+    <main style="margin-top:40px">
       <section class="hero">
         <div class="card intro">
           <p class="eyebrow">Browser firmware installer</p>
@@ -778,6 +850,16 @@
                 <li>USB SD-card transfer mode</li>
                 <li>Extended-Latin character support</li>
               </ul>
+              <div id="uptodate-badge" class="uptodate-badge" hidden>
+                <span class="uptodate-left">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Up to date
+                </span>
+                <span class="uptodate-right">
+                  <span id="uptodate-version"></span>
+                  <span id="uptodate-ago"></span>
+                </span>
+              </div>
               <esp-web-install-button manifest="firmware/manifest.json">
                 <button id="firmware-install-button" slot="activate">Install Firmware</button>
                 <span slot="unsupported">Use Chrome or Edge on desktop with Web Serial support.</span>
@@ -1041,33 +1123,26 @@
       }
 
       function refreshFlashHistory() {
-        if (!flashHistoryLabel) {
-          return;
-        }
-
         const history = readFlashHistory();
-        if (!history || typeof history.timestamp !== "number") {
-          flashHistoryLabel.textContent = "No installations in history";
-          flashHistoryLabel.classList.remove("update-available");
-          return;
-        }
+        const hasHistory = history && typeof history.timestamp === "number";
 
-        const hasUpdate =
+        const hasUpdate = hasHistory &&
           typeof history.version === "string" &&
           history.version.length > 0 &&
           currentManifestVersion.length > 0 &&
           history.version !== currentManifestVersion;
 
-        if (hasUpdate) {
-          flashHistoryLabel.textContent = `Update available · You have v${history.version}`;
-          flashHistoryLabel.classList.add("update-available");
-        } else {
-          const versionPrefix = typeof history.version === "string" && history.version.length > 0
-            ? `v${history.version} · `
-            : "";
-          flashHistoryLabel.textContent = `${versionPrefix}flashed ${formatTimeAgo(history.timestamp)}`;
-          flashHistoryLabel.classList.remove("update-available");
+        // Section-summary in the card header — only show when update available
+        if (flashHistoryLabel) {
+          if (hasUpdate) {
+            flashHistoryLabel.textContent = `Update available`;
+            flashHistoryLabel.classList.add("update-available");
+          } else {
+            flashHistoryLabel.textContent = "";
+            flashHistoryLabel.classList.remove("update-available");
+          }
         }
+
       }
 
       function refreshInstallButton() {
@@ -1075,7 +1150,15 @@
           return;
         }
 
+        const uptodateBadge = document.getElementById("uptodate-badge");
+        const espButton = installButton.closest("esp-web-install-button");
         const history = readFlashHistory();
+        const isUpToDate =
+          !!history &&
+          typeof history.version === "string" &&
+          history.version.length > 0 &&
+          currentManifestVersion.length > 0 &&
+          history.version === currentManifestVersion;
         const shouldOfferUpdate =
           !!history &&
           typeof history.version === "string" &&
@@ -1083,7 +1166,51 @@
           currentManifestVersion.length > 0 &&
           history.version !== currentManifestVersion;
 
-        installButton.textContent = shouldOfferUpdate ? `Update to v${currentManifestVersion}` : "Install Firmware";
+        if (isUpToDate && uptodateBadge && espButton) {
+          uptodateBadge.hidden = false;
+          espButton.hidden = true;
+          var utdVersion = document.getElementById("uptodate-version");
+          var utdAgo = document.getElementById("uptodate-ago");
+          if (utdVersion) utdVersion.textContent = `v${history.version}`;
+          if (utdAgo) utdAgo.textContent = formatTimeAgo(history.timestamp);
+          // Add reinstall link if not already present
+          let reinstallLink = document.getElementById("uptodate-reinstall");
+          if (!reinstallLink) {
+            reinstallLink = document.createElement("button");
+            reinstallLink.id = "uptodate-reinstall";
+            reinstallLink.className = "uptodate-reinstall";
+            reinstallLink.addEventListener("click", function () {
+              espButton.style.position = "absolute";
+              espButton.style.opacity = "0";
+              espButton.style.pointerEvents = "none";
+              espButton.hidden = false;
+              installButton.click();
+              espButton.hidden = true;
+              espButton.style.position = "";
+              espButton.style.opacity = "";
+              espButton.style.pointerEvents = "";
+            });
+            uptodateBadge.insertAdjacentElement("afterend", reinstallLink);
+          }
+          const version = currentManifestVersion ? ` \u00b7 v${currentManifestVersion}` : "";
+          reinstallLink.textContent = `Install Firmware${version}`;
+          reinstallLink.hidden = false;
+        } else if (uptodateBadge && espButton) {
+          uptodateBadge.hidden = true;
+          espButton.hidden = false;
+          const reinstallLink = document.getElementById("uptodate-reinstall");
+          if (reinstallLink) reinstallLink.hidden = true;
+
+          const label = shouldOfferUpdate ? "Update Firmware" : "Install Firmware";
+          if (shouldOfferUpdate) {
+            installButton.innerHTML = `<span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>${label}</span><span class="btn-version"><span>v${currentManifestVersion}</span><span>${formatTimeAgo(history.timestamp)}</span></span>`;
+          } else {
+            const versionTag = currentManifestVersion
+              ? `<span class="btn-version">v${currentManifestVersion}</span>`
+              : "";
+            installButton.innerHTML = `<span>${label}</span>${versionTag}`;
+          }
+        }
       }
 
       async function loadManifestVersion() {
@@ -1101,7 +1228,21 @@
           currentManifestVersion = "";
         }
 
+        refreshFlashHistory();
         refreshInstallButton();
+        refreshDebugVersions();
+      }
+
+      function refreshDebugVersions() {
+        const history = readFlashHistory();
+        const dbgFlashed = document.getElementById("dbg-flashed");
+        const dbgAvailable = document.getElementById("dbg-available");
+        if (dbgFlashed) {
+          dbgFlashed.textContent = history && history.version ? `v${history.version}` : "none";
+        }
+        if (dbgAvailable) {
+          dbgAvailable.textContent = currentManifestVersion ? `v${currentManifestVersion}` : "loading…";
+        }
       }
 
       function trackInstallDialog(dialog) {
@@ -1192,6 +1333,7 @@
       refreshFlashHistory();
       refreshInstallButton();
       loadManifestVersion();
+      refreshDebugVersions();
     </script>
   </body>
 </html>
