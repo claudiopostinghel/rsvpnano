@@ -1085,9 +1085,11 @@
       }
 
       function trackInstallDialog(dialog) {
+        console.log("[flash-track] trackInstallDialog started", dialog.nodeName);
         let saved = false;
         const pollTimer = window.setInterval(function () {
           if (!document.body.contains(dialog)) {
+            console.log("[flash-track] dialog removed from DOM, stopping");
             window.clearInterval(pollTimer);
             return;
           }
@@ -1097,6 +1099,11 @@
           }
 
           var msg = dialog.shadowRoot.querySelector("ewt-page-message");
+          console.log("[flash-track] poll — ewt-page-message:", msg, "label:", msg && msg.label);
+          if (!msg) {
+            // dump all shadow children for debugging
+            console.log("[flash-track] shadowRoot children:", Array.from(dialog.shadowRoot.querySelectorAll("*")).map(function(e){ return e.nodeName + (e.label ? "[label="+e.label+"]" : "") + (e.slot ? "[slot="+e.slot+"]" : ""); }));
+          }
           if (!msg || !msg.label || String(msg.label).indexOf("complete") === -1) {
             return;
           }
