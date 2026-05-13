@@ -788,11 +788,7 @@
     </style>
   </head>
   <body>
-    <div id="debug-versions" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#1a1a2e;color:#fffaf1;font:700 0.82rem/1.4 ui-monospace,monospace;padding:8px 16px;display:flex;gap:24px;border-bottom:2px solid var(--accent)">
-      <span>Last flashed: <strong id="dbg-flashed">—</strong></span>
-      <span>Available now: <strong id="dbg-available">—</strong></span>
-    </div>
-    <main style="margin-top:40px">
+    <main>
       <section class="hero">
         <div class="card intro">
           <p class="eyebrow">Browser firmware installer</p>
@@ -1230,19 +1226,6 @@
 
         refreshFlashHistory();
         refreshInstallButton();
-        refreshDebugVersions();
-      }
-
-      function refreshDebugVersions() {
-        const history = readFlashHistory();
-        const dbgFlashed = document.getElementById("dbg-flashed");
-        const dbgAvailable = document.getElementById("dbg-available");
-        if (dbgFlashed) {
-          dbgFlashed.textContent = history && history.version ? `v${history.version}` : "none";
-        }
-        if (dbgAvailable) {
-          dbgAvailable.textContent = currentManifestVersion ? `v${currentManifestVersion}` : "loading…";
-        }
       }
 
       function trackInstallDialog(dialog) {
@@ -1333,7 +1316,6 @@
       refreshFlashHistory();
       refreshInstallButton();
       loadManifestVersion();
-      refreshDebugVersions();
     </script>
   </body>
 </html>
