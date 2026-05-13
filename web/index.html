@@ -167,6 +167,10 @@
         display: none;
       }
 
+      .section-summary.update-available {
+        color: var(--accent-deep);
+      }
+
       .chevron {
         width: 20px;
         height: 20px;
@@ -1044,10 +1048,26 @@
         const history = readFlashHistory();
         if (!history || typeof history.timestamp !== "number") {
           flashHistoryLabel.textContent = "No installations in history";
+          flashHistoryLabel.classList.remove("update-available");
           return;
         }
 
-        flashHistoryLabel.textContent = `Last flashed ${formatTimeAgo(history.timestamp)}`;
+        const hasUpdate =
+          typeof history.version === "string" &&
+          history.version.length > 0 &&
+          currentManifestVersion.length > 0 &&
+          history.version !== currentManifestVersion;
+
+        if (hasUpdate) {
+          flashHistoryLabel.textContent = `Update available · You have v${history.version}`;
+          flashHistoryLabel.classList.add("update-available");
+        } else {
+          const versionPrefix = typeof history.version === "string" && history.version.length > 0
+            ? `v${history.version} · `
+            : "";
+          flashHistoryLabel.textContent = `${versionPrefix}flashed ${formatTimeAgo(history.timestamp)}`;
+          flashHistoryLabel.classList.remove("update-available");
+        }
       }
 
       function refreshInstallButton() {
@@ -1063,7 +1083,7 @@
           currentManifestVersion.length > 0 &&
           history.version !== currentManifestVersion;
 
-        installButton.textContent = shouldOfferUpdate ? "Update Firmware" : "Install Firmware";
+        installButton.textContent = shouldOfferUpdate ? `Update to v${currentManifestVersion}` : "Install Firmware";
       }
 
       async function loadManifestVersion() {
