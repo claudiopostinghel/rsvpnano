@@ -659,7 +659,7 @@ async function ingestDescriptors(descriptors, statusTitle) {
     } else {
       setStatus(
         "Conversion complete",
-        `${readyCount} ${pluralize("book", readyCount)} are ready to download or sync into /books.`,
+        `${readyCount} ${pluralize("book", readyCount)} are ready to download or sync into /books/books.`,
         "success",
       );
     }
@@ -754,13 +754,13 @@ async function chooseBooksDirectory() {
     if (directoryHandle.name.toLowerCase() === "books") {
       setStatus(
         "Books folder selected",
-        "The page can now scan, clean, and sync files directly inside /books.",
+        "The page can now scan, clean, and sync files directly inside /books/books.",
         "success",
       );
     } else {
       setStatus(
         "Folder selected",
-        `You picked /${directoryHandle.name}. For best results, point this at the SD card’s /books folder.`,
+        `You picked /${directoryHandle.name}. For best results, point this at the SD card’s /books/books folder.`,
         "info",
       );
     }
